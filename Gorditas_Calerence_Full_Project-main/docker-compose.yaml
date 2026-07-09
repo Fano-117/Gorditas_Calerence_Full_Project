@@ -1,0 +1,43 @@
+services:
+  
+  calerence_back:
+    image: desarollonerualmane/calerence_backend
+    container_name: calerence_back
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      MONGODB_URI: mongodb://admin:admin123@mongo:27017/calerence_db?authSource=admin
+      JWT_SECRET: StAn121120360ne
+    command: ["npm", "run", "dev"]
+    depends_on:
+      - mongo        
+    restart: unless-stopped
+
+  calerence_front:
+    image: desarollonerualmane/calerence_frontend:latest
+    container_name: calerence_front
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://calerence_back:5000
+    depends_on:
+      - calerence_back
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:8.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: calerence_db
+    volumes:
+      - mongo_data:/data/db   
+    restart: unless-stopped
+
+
+volumes:
+  mongo_data:
